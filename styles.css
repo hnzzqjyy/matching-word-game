@@ -17,6 +17,10 @@ body {
     z-index: 1000; /* 确保控件在最上层 */
 }
 
+#music-controls {
+    margin-top: 10px;
+}
+
 #music-toggle {
     padding: 10px 20px;
     font-size: 16px;
