@@ -7,6 +7,7 @@ const words = [
     { english: "Fish", chinese: "鱼" },
     { english: "duck", chinese: "鸭子" },
     { english: "book", chinese: "书" },
+
 ];
 
 let selectedCards = [];
