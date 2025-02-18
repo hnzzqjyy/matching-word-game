@@ -55,6 +55,20 @@ h1 {
     transform: rotateY(180deg);
 }
 
+#music-controls {
+    margin-top: 20px;
+}
+
+#music-toggle {
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+#volume-control {
+    margin-left: 10px;
+    vertical-align: middle;
+}
 
 @media (max-width: 600px) {
     .column {

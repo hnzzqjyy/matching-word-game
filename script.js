@@ -154,4 +154,28 @@ window.onload = () => {
     loadHighScore();
     createGameBoard();
     startTimer();
+
+// 背景音乐控制
+    const backgroundMusic = document.getElementById('background-music');
+    const musicToggle = document.getElementById('music-toggle');
+    const volumeControl = document.getElementById('volume-control');
+
+    // 自动播放背景音乐
+    backgroundMusic.play();
+
+    // 暂停/播放按钮
+    musicToggle.addEventListener('click', () => {
+        if (backgroundMusic.paused) {
+            backgroundMusic.play();
+            musicToggle.textContent = '暂停音乐';
+        } else {
+            backgroundMusic.pause();
+            musicToggle.textContent = '播放音乐';
+        }
+    });
+
+    // 音量调节
+    volumeControl.addEventListener('input', () => {
+        backgroundMusic.volume = volumeControl.value;
+    });
 };
