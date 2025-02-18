@@ -4,11 +4,32 @@ const words = [
     { english: "Cat", chinese: "猫" },
     { english: "Dog", chinese: "狗" },
     { english: "Elephant", chinese: "大象" },
-    { english: "Fish", chinese: "鱼" }
+    { english: "Fish", chinese: "鱼" },
+    { english: "duck", chinese: "鸭子" },
+    { english: "book", chinese: "书" },
+
 ];
 
 let selectedCards = [];
 let matchedPairs = 0;
+let startTime;
+let timerInterval;
+
+// 加载最高分
+function loadHighScore() {
+    const highScore = localStorage.getItem('highScore') || '无';
+    document.getElementById('high-score').textContent = `最高分: ${highScore}`;
+}
+
+// 保存最高分
+function saveHighScore(time) {
+    const highScore = localStorage.getItem('highScore') || Infinity;
+    if (time < highScore) {
+        localStorage.setItem('highScore', time);
+        document.getElementById('high-score').textContent = `最高分: ${time}`;
+        alert(`新纪录！你的最高分是: ${time} 秒`);
+    }
+}
 
 // 打乱数组顺序
 function shuffleArray(array) {
@@ -27,16 +48,36 @@ function playSound(sound) {
 // 创建游戏板
 function createGameBoard() {
     const gameBoard = document.getElementById('game-board');
-    const allWords = [...words.map(w => w.english), ...words.map(w => w.chinese)];
-    shuffleArray(allWords);
+    const chineseWords = words.map(w => w.chinese);
+    const englishWords = words.map(w => w.english);
+    shuffleArray(chineseWords);
+    shuffleArray(englishWords);
 
-    allWords.forEach(word => {
+    // 添加中文单词到左侧
+    const leftContainer = document.createElement('div');
+    leftContainer.classList.add('column');
+    chineseWords.forEach(word => {
         const card = document.createElement('div');
         card.classList.add('card');
         card.textContent = word;
+        card.dataset.language = 'chinese'; // 标记为中文
         card.addEventListener('click', () => selectCard(card));
-        gameBoard.appendChild(card);
+        leftContainer.appendChild(card);
     });
+    gameBoard.appendChild(leftContainer);
+
+    // 添加英文单词到右侧
+    const rightContainer = document.createElement('div');
+    rightContainer.classList.add('column');
+    englishWords.forEach(word => {
+        const card = document.createElement('div');
+        card.classList.add('card');
+        card.textContent = word;
+        card.dataset.language = 'english'; // 标记为英文
+        card.addEventListener('click', () => selectCard(card));
+        rightContainer.appendChild(card);
+    });
+    gameBoard.appendChild(rightContainer);
 }
 
 // 选择卡片
@@ -57,6 +98,15 @@ function checkMatch() {
     const word1 = card1.textContent;
     const word2 = card2.textContent;
 
+// 确保一张是中文，一张是英文
+    if (card1.dataset.language === card2.dataset.language) {
+        alert('请选择一张中文和一张英文卡片！');
+        card1.classList.remove('selected');
+        card2.classList.remove('selected');
+        selectedCards = [];
+        return;
+    }
+
     const isMatch = words.some(w => 
         (w.english === word1 && w.chinese === word2) || 
         (w.english === word2 && w.chinese === word1)
@@ -67,9 +117,13 @@ function checkMatch() {
         card1.classList.add('matched');
         card2.classList.add('matched');
         matchedPairs++;
-        if (matchedPairs === words.length) {
-            setTimeout(() => alert('恭喜你，全部配对成功！'), 500);
-        }
+           if (matchedPairs === words.length) {
+        stopTimer();
+        const elapsedTime = Math.floor((Date.now() - startTime) / 1000);
+
+        saveHighScore(elapsedTime);
+        alert(`恭喜你，全部配对成功！用时: ${elapsedTime} 秒`);
+    }
     } else {
         playSound('mismatch-sound.mp3'); // 匹配失败的音效
         setTimeout(() => {
@@ -81,5 +135,23 @@ function checkMatch() {
     selectedCards = [];
 }
 
+function startTimer() {
+    startTime = Date.now();
+    timerInterval = setInterval(updateTimer, 1000);
+}
+
+function updateTimer() {
+    const elapsedTime = Math.floor((Date.now() - startTime) / 1000);
+    document.getElementById('timer').textContent = `时间: ${elapsedTime} 秒`;
+}
+
+function stopTimer() {
+    clearInterval(timerInterval);
+}
+
 // 初始化游戏
-window.onload = createGameBoard;
+window.onload = () => {
+    loadHighScore();
+    createGameBoard();
+    startTimer();
+};
