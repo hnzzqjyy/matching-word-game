@@ -142,7 +142,12 @@ function startTimer() {
 
 function updateTimer() {
     const elapsedTime = Math.floor((Date.now() - startTime) / 1000);
-    document.getElementById('timer').textContent = `时间: ${elapsedTime} 秒`;
+    const timerElement = document.getElementById('timer');
+      if (timerElement) {
+      timerElement.textContent = `时间: ${elapsedTime} 秒`;
+       } else {
+       console.error('未找到ID为"timer"的元素');
+                     }
 }
 
 function stopTimer() {
